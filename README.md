@@ -1,4 +1,4 @@
-# MediaConverterApp
+# RinConvert
 
 A modern Android media converter application built with Jetpack Compose, Hilt, Room, WorkManager, and FFmpeg Kit. This app allows users to convert various media formats (video, audio, images) with ease.
 
