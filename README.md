@@ -66,7 +66,8 @@ The app requests the following permissions:
 ## Download & Installation
 
 ### From GitHub Releases
-1. Go to the [Releases]([https://github.com/yourusername/MediaConverterApp/releases](https://github.com/ATKLlama/RinConvert/releases)) page
+1. Go to the [Releases](https://github.com/ATKLlama/RinConvert/releases) page to fix this on GitHub.
+
 2. Download the latest APK from the assets section
 3. Enable "Install from unknown sources" in your device settings
 4. Install the APK
