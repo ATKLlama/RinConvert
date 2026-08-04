@@ -20,7 +20,6 @@ A modern Android media converter application built with Jetpack Compose, Hilt, R
 
 ![App Icon](./app/src/main/res/drawable/app_icon.jpg)
 
-*(Add actual screenshots here)*
 
 ## Features in Detail
 
