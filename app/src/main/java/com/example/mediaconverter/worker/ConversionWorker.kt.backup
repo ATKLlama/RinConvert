@@ -1,0 +1,203 @@
+package com.example.mediaconverter.worker
+
+import android.content.Context
+import android.content.pm.ServiceInfo
+import android.net.Uri
+import android.os.Build
+import androidx.work.CoroutineWorker
+import androidx.work.ForegroundInfo
+import androidx.work.WorkerParameters
+import androidx.work.workDataOf
+import com.arthenica.ffmpegkit.FFmpegKit
+import com.arthenica.ffmpegkit.ReturnCode
+import com.example.mediaconverter.util.NotificationHelper
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import timber.log.Timber
+import java.io.File
+import java.io.FileOutputStream
+
+class ConversionWorker(
+    appContext: Context,
+    workerParams: WorkerParameters
+) : CoroutineWorker(appContext, workerParams) {
+
+    private val notificationId = 101
+
+    override suspend fun doWork(): Result {
+        val inputUri = inputData.getString("input_uri") ?: return Result.failure()
+        val outputPath = inputData.getString("output_path") ?: return Result.failure()
+        val videoQuality = inputData.getString("video_quality") ?: "720p"
+        val audioBitrate = inputData.getString("audio_bitrate") ?: "128k"
+        val trimEnabled = inputData.getBoolean("trim_enabled", false)
+        val startTime = inputData.getString("start_time")
+        val endTime = inputData.getString("end_time")
+
+        NotificationHelper.createNotificationChannel(applicationContext)
+
+        val notification = NotificationHelper.createProgressNotification(
+            applicationContext,
+            "Converting media",
+            "Starting conversion..."
+        ).build()
+        
+        val foregroundInfo = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            ForegroundInfo(notificationId, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC)
+        } else {
+            ForegroundInfo(notificationId, notification)
+        }
+        setForeground(foregroundInfo)
+
+        return withContext(Dispatchers.IO) {
+            try {
+                val tempInputFileResult = copyUriToTempFileWithReason(inputUri)
+                if (tempInputFileResult.isFailure) {
+                    val errorMsg = tempInputFileResult.exceptionOrNull()?.message ?: "Failed to prepare input file"
+                    NotificationHelper.updateNotification(
+                        applicationContext,
+                        notificationId,
+                        "Conversion Failed",
+                        errorMsg,
+                        0,
+                        true
+                    )
+                    return@withContext Result.failure(workDataOf("error" to errorMsg))
+                }
+                
+                val tempInputFile = tempInputFileResult.getOrThrow()
+                
+                val command = buildFFmpegCommand(
+                    tempInputFile.absolutePath,
+                    outputPath,
+                    videoQuality,
+                    audioBitrate,
+                    trimEnabled,
+                    startTime,
+                    endTime
+                )
+
+                Timber.d("FFmpegCommand: $command")
+
+                val progressJob = launch {
+                    var progress = 0
+                    while (isActive && progress < 100) {
+                        delay(1000)
+                        progress = (progress + 5).coerceAtMost(95)
+                        setProgress(workDataOf("progress" to progress))
+                        NotificationHelper.updateNotification(
+                            applicationContext,
+                            notificationId,
+                            "Converting media",
+                            "Progress: $progress%",
+                            progress
+                        )
+                    }
+                }
+
+                val session = FFmpegKit.execute(command)
+                progressJob.cancel()
+
+                if (ReturnCode.isSuccess(session.returnCode)) {
+                    NotificationHelper.updateNotification(
+                        applicationContext,
+                        notificationId,
+                        "Conversion Complete",
+                        "Your media has been converted successfully",
+                        100
+                    )
+                    tempInputFile.delete()
+                    Result.success(workDataOf("output_path" to outputPath))
+                } else {
+                    Timber.e("FFmpeg failed with result ${session.returnCode}")
+                    NotificationHelper.updateNotification(
+                        applicationContext,
+                        notificationId,
+                        "Conversion Failed",
+                        "Failed to convert media",
+                        0,
+                        true
+                    )
+                    tempInputFile.delete()
+                    Result.failure()
+                }
+            } catch (e: Exception) {
+                Timber.e(e, "Error in conversion worker")
+                Result.failure()
+            }
+        }
+    }
+
+    private fun buildFFmpegCommand(
+        inputPath: String,
+        outputPath: String,
+        videoQuality: String?,
+        audioBitrate: String?,
+        trimEnabled: Boolean,
+        startTime: String?,
+        endTime: String?
+    ): String {
+        val command = mutableListOf(
+            "-y",
+            "-i", inputPath,
+            "-c:v", "libx264",
+            "-c:a", "aac",
+            "-preset", "medium",
+            "-movflags", "+faststart"
+        )
+
+        if (trimEnabled && !startTime.isNullOrBlank() && !endTime.isNullOrBlank()) {
+            command.addAll(listOf("-ss", startTime, "-to", endTime))
+        }
+
+        if (videoQuality != null) {
+            val resolution = when (videoQuality) {
+                "360p" -> "640x360"
+                "480p" -> "854x480"
+                "720p" -> "1280x720"
+                "1080p" -> "1920x1080"
+                else -> "1280x720"
+            }
+            command.addAll(listOf("-vf", "scale=$resolution"))
+        }
+
+        if (audioBitrate != null) {
+            val bitrate = audioBitrate.replace(Regex("[^0-9]"), "") + "k"
+            command.addAll(listOf("-b:a", bitrate))
+        }
+
+        command.add(outputPath)
+
+        return command.joinToString(" ")
+    }
+
+    private fun copyUriToTempFileWithReason(uriString: String): kotlin.Result<File> {
+        val uri = Uri.parse(uriString)
+        val scheme = uri.scheme
+        if (scheme == "http" || scheme == "https") {
+            return kotlin.Result.failure(Exception("Direct conversion of web URLs is not supported yet. Please select a local file."))
+        }
+        
+        val context = applicationContext
+        val tempFile = File(context.cacheDir, "temp_input_" + System.currentTimeMillis())
+        
+        return try {
+            context.contentResolver.openInputStream(uri)?.use { inputStream ->
+                FileOutputStream(tempFile).use { outputStream ->
+                    inputStream.copyTo(outputStream)
+                }
+            }
+            kotlin.Result.success(tempFile)
+        } catch (e: Exception) {
+            Timber.e(e, "Failed to copy URI to temp file")
+            kotlin.Result.failure(Exception("Failed to access the selected file: ${e.message}"))
+        }
+    }
+
+    @Deprecated("Use copyUriToTempFileWithReason instead", ReplaceWith("copyUriToTempFileWithReason(uriString).getOrNull()"))
+    private fun copyUriToTempFile(uriString: String): File? {
+        return copyUriToTempFileWithReason(uriString).getOrNull()
+    }
+}

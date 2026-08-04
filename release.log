@@ -1,0 +1,76 @@
+> Task :app:buildKotlinToolingMetadata UP-TO-DATE
+> Task :app:checkKotlinGradlePluginConfigurationErrors
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preReleaseBuild UP-TO-DATE
+> Task :app:checkReleaseAarMetadata UP-TO-DATE
+> Task :app:generateReleaseResValues UP-TO-DATE
+> Task :app:mapReleaseSourceSetPaths
+> Task :app:generateReleaseResources UP-TO-DATE
+> Task :app:packageReleaseResources
+> Task :app:createReleaseCompatibleScreenManifests UP-TO-DATE
+> Task :app:extractDeepLinksRelease UP-TO-DATE
+> Task :app:processReleaseMainManifest UP-TO-DATE
+> Task :app:processReleaseManifest UP-TO-DATE
+> Task :app:processReleaseManifestForPackage UP-TO-DATE
+> Task :app:parseReleaseLocalResources
+> Task :app:javaPreCompileRelease UP-TO-DATE
+> Task :app:extractProguardFiles UP-TO-DATE
+> Task :app:mergeReleaseJniLibFolders UP-TO-DATE
+> Task :app:mergeReleaseNativeLibs UP-TO-DATE
+> Task :app:checkReleaseDuplicateClasses UP-TO-DATE
+> Task :app:desugarReleaseFileDependencies UP-TO-DATE
+> Task :app:mergeExtDexRelease UP-TO-DATE
+> Task :app:mergeReleaseArtProfile UP-TO-DATE
+> Task :app:mergeReleaseShaders UP-TO-DATE
+> Task :app:compileReleaseShaders NO-SOURCE
+> Task :app:generateReleaseAssets UP-TO-DATE
+> Task :app:mergeReleaseAssets UP-TO-DATE
+> Task :app:compressReleaseAssets UP-TO-DATE
+> Task :app:collectReleaseDependencies UP-TO-DATE
+
+> Task :app:stripReleaseDebugSymbols
+Unable to strip the following libraries, packaging them as they are: libavcodec.so, libavcodec_neon.so, libavdevice.so, libavdevice_neon.so, libavfilter.so, libavfilter_neon.so, libavformat.so, libavformat_neon.so, libavutil.so, libavutil_neon.so, libc++_shared.so, libffmpegkit.so, libffmpegkit_abidetect.so, libffmpegkit_armv7a_neon.so, libswresample.so, libswresample_neon.so, libswscale.so, libswscale_neon.so.
+
+> Task :app:sdkReleaseDependencyData
+> Task :app:writeReleaseAppMetadata
+> Task :app:writeReleaseSigningConfigVersions
+> Task :app:mergeReleaseResources
+> Task :app:extractReleaseNativeSymbolTables
+> Task :app:mergeReleaseNativeDebugMetadata NO-SOURCE
+> Task :app:processReleaseResources
+> Task :app:optimizeReleaseResources
+> Task :app:kspReleaseKotlin
+
+> Task :app:compileReleaseKotlin
+w: file:///C:/Users/Adyaan/Documents/T/MediaConverterApp/app/src/main/java/com/example/mediaconverter/ui/screen/ConversionSettingsScreen.kt:33:44 'ArrowBack: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.ArrowBack
+w: file:///C:/Users/Adyaan/Documents/T/MediaConverterApp/app/src/main/java/com/example/mediaconverter/ui/screen/HistoryScreen.kt:42:44 'ArrowBack: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.ArrowBack
+w: file:///C:/Users/Adyaan/Documents/T/MediaConverterApp/app/src/main/java/com/example/mediaconverter/ui/screen/HomeScreen.kt:31:9 Variable 'context' is never used
+w: file:///C:/Users/Adyaan/Documents/T/MediaConverterApp/app/src/main/java/com/example/mediaconverter/ui/screen/PreviewScreen.kt:44:44 'ArrowBack: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.ArrowBack
+w: file:///C:/Users/Adyaan/Documents/T/MediaConverterApp/app/src/main/java/com/example/mediaconverter/ui/screen/PreviewScreen.kt:92:17 'LinearProgressIndicator(Float, Modifier = ..., Color = ..., Color = ..., StrokeCap = ...): Unit' is deprecated. Use the overload that takes `progress` as a lambda
+w: file:///C:/Users/Adyaan/Documents/T/MediaConverterApp/app/src/main/java/com/example/mediaconverter/ui/screen/SettingsScreen.kt:31:44 'ArrowBack: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.ArrowBack
+w: file:///C:/Users/Adyaan/Documents/T/MediaConverterApp/app/src/main/java/com/example/mediaconverter/ui/viewmodel/HistoryViewModel.kt:70:23 Parameter 'item' is never used
+w: file:///C:/Users/Adyaan/Documents/T/MediaConverterApp/app/src/main/java/com/example/mediaconverter/ui/viewmodel/HistoryViewModel.kt:74:19 Parameter 'item' is never used
+w: file:///C:/Users/Adyaan/Documents/T/MediaConverterApp/app/src/main/java/com/example/mediaconverter/ui/viewmodel/PreviewViewModel.kt:162:40 Parameter 'inputUri' is never used
+w: file:///C:/Users/Adyaan/Documents/T/MediaConverterApp/app/src/main/java/com/example/mediaconverter/util/FFmpegUtils.kt:17:24 Parameter 'context' is never used
+w: file:///C:/Users/Adyaan/Documents/T/MediaConverterApp/app/src/main/java/com/example/mediaconverter/worker/ConversionWorker.kt:116:9 Parameter 'outputFormat' is never used
+
+> Task :app:compileReleaseJavaWithJavac
+> Task :app:hiltAggregateDepsRelease
+> Task :app:hiltJavaCompileRelease
+> Task :app:generateReleaseLintVitalReportModel
+> Task :app:processReleaseJavaRes
+> Task :app:lintVitalAnalyzeRelease
+> Task :app:transformReleaseClassesWithAsm
+> Task :app:dexBuilderRelease
+> Task :app:mergeReleaseJavaResource
+> Task :app:mergeReleaseGlobalSynthetics
+> Task :app:mergeDexRelease
+> Task :app:compileReleaseArtProfile
+> Task :app:lintVitalReportRelease
+> Task :app:lintVitalRelease
+> Task :app:packageRelease
+> Task :app:createReleaseApkListingFileRedirect
+> Task :app:assembleRelease
+
+BUILD SUCCESSFUL in 3m 27s
+50 actionable tasks: 30 executed, 20 up-to-date
